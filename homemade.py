@@ -40,13 +40,18 @@ class MarsEngine(MinimalEngine):
             values.append([random.random(),move])
             if board.is_capture(move):
                 values[-1][0]+=piece_values[board.piece_map()[move.to_square]]
-    #        if board.is_checkmate(move):
-     #           values[-1][0]+=piece_values["K"]
             if (board.is_attacked_by(not board.turn, move.to_square)):
                 values[-1][0]-=piece_values[board.piece_map()[move.from_square]]
-            if (board.is_attacked_by(not board.turn , move.to_square)):
+            if (board.is_attacked_by(not board.turn , move.from_square)):
                 values[-1][0]+=piece_values[board.piece_map()[move.from_square]]
-        logger.info("xd")
+
+            board.push(move)
+            if(board.is_check):
+                values[-1][0]+=50
+            if(board.is_checkmate):
+                values[-1][0]+=piece_values['K']
+            
+
 
         values.sort(reverse=True)
         return PlayResult(values[0][1], None)
