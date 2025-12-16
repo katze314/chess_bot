@@ -9,6 +9,7 @@ import random
 from lib.engine_wrapper import MinimalEngine
 from lib.lichess_types import MOVE, HOMEMADE_ARGS_TYPE
 import logging
+import math
 
 
 # Use this logger variable to print messages to the console or log files.
@@ -22,6 +23,29 @@ class ExampleEngine(MinimalEngine):
 
 
 # Bot names and ideas from tom7's excellent eloWorld video
+
+piece_values={"K":100000, "R": 500,"Q": 900,"B": 350, "K": 300, "P":100, None: 0}
+
+class MarsEngine(MinimalEngine):
+
+    def search(self, board: chess.Board, *args: HOMEMADE_ARGS_TYPE) -> PlayResult:
+        moves=list(board.legal_moves)
+        values=[]
+        for move in moves():
+            values.append[math.random(),move]
+            if chess.is_capture(move):
+                values[-1][0]+=piece_values[chess.piece_map()[move.to_square]]
+            if chess.is_checkmate(move):
+                values[-1][0]+=piece_values["K"]
+            if (chess.is_attacked_by(not board.turn, move.to_square)):
+                values[-1][0]-=piece_values[chess.piece_map()[move.from_square]]
+            if (chess.is_attacked_by(not board.turn , move.to_square)):
+                values[-1][0]+=piece_values[chess.piece_map()[move.from_square]]
+        
+        values.sort(reverse=True)
+        return PlayResult(values[0][1], None)
+
+
 
 class RandomMove(ExampleEngine):
     """Get a random move."""
