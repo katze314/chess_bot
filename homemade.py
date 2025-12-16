@@ -24,7 +24,7 @@ class ExampleEngine(MinimalEngine):
 
 # Bot names and ideas from tom7's excellent eloWorld video
 
-piece_values={chess.Piece.from_symbol('K'):100000, chess.Piece.from_symbol('R'): 500,chess.Piece.from_symbol('Q'): 900,chess.Piece.from_symbol('B'): 350, chess.Piece.from_symbol('N'): 300, chess.Piece.from_symbol('P'):100,chess.Piece.from_symbol('k'):100000, chess.Piece.from_symbol('r'): 500,chess.Piece.from_symbol('q'): 900,chess.Piece.from_symbol('b'): 350, chess.Piece.from_symbol('n'): 300, chess.Piece.from_symbol('p'):100,'K':100000, 'R': 500,'Q': 900,'B': 350, 'N': 300, 'P':100,'k':100000, 'r': 500,'q': 900,'b': 350, 'n': 300, 'p':100, None: 0}
+piece_values={chess.Piece.from_symbol('K'):100000, chess.Piece.from_symbol('R'): 500,chess.Piece.from_symbol('Q'): 900,chess.Piece.from_symbol('B'): 350, chess.Piece.from_symbol('N'): 300, chess.Piece.from_symbol('P'):100,chess.Piece.from_symbol('k'):100000, chess.Piece.from_symbol('r'): 500,chess.Piece.from_symbol('q'): 900,chess.Piece.from_symbol('b'): 350, chess.Piece.from_symbol('n'): 300, chess.Piece.from_symbol('p'):100, 'K':100000, 'R': 500, 'Q': 900,'B': 350, 'N': 300, 'P':100,'k':100000, 'r': 500,'q': 900,'b': 350, 'n': 300, 'p':100, None: 0}
 
 class MarsEngine(MinimalEngine):
 
@@ -39,6 +39,7 @@ class MarsEngine(MinimalEngine):
         for move in moves:
             values.append([random.random(),move])
             if board.is_capture(move):
+                
                 values[-1][0]+=piece_values[board.piece_map()[move.to_square]]
             if (board.is_attacked_by(not board.turn, move.to_square)):
                 values[-1][0]-=piece_values[board.piece_map()[move.from_square]]
@@ -49,8 +50,8 @@ class MarsEngine(MinimalEngine):
             if(board.is_check):
                 values[-1][0]+=50
             if(board.is_checkmate):
-                values[-1][0]+=piece_values['K']
-            
+                values[-1][0]+=100000
+            board.pop()
 
 
         values.sort(reverse=True)
