@@ -118,17 +118,20 @@ class MarsEngine(MinimalEngine):
         def board_value(board):    
             value=0
 
+              
             #check if game is over
             res=board.outcome()
-            if(not res.termination == None):
-                if(res.termination ==1):
-                    if res.winner:
-                        return 100000
+            if (not res== None):
+                if(not res.termination == None):
+                    if(res.termination ==1):
+                        if res.winner:
+                            return 100000
+                        else:
+                            return -100000  
                     else:
-                        return -100000  
-                else:
-                    return 0
-                
+                        return 0
+
+
             #calculate values of figures on board
 
             for square in range(64):
@@ -147,23 +150,23 @@ class MarsEngine(MinimalEngine):
 
             return value
             
-
+# something about this isnt working!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         def minimax(depth, white, board):
             if depth==0:
-                return [board_value(board),None]
+                return list([board_value(board),None])
             else:
                 logger.info(board)
                 moves=list(board.legal_moves)
                 logger.info(moves)
-                if len(moves==0):
-                    return [board_value(board), None]
+                #if len(moves==0):
+                #    return list([board_value(board), None])
                 if white:
                     best_move=moves[0]
                     best_value=-1000000
                     for move in moves:
                         board.push(move)
                         new_value=minimax(depth-1,False,board)
-                        if  new_value[0] > best_value:
+                        if  int(new_value[0]) > best_value:
                             best_move=move
                             best_value=new_value
                         board.pop()
@@ -173,16 +176,18 @@ class MarsEngine(MinimalEngine):
                     for move in moves:
                         board.push(move)
                         new_value=minimax(depth-1,True,board)
-                        if  new_value[0] < best_value:
+                        if  int(new_value[0]) < best_value:
                             best_move=move
                             best_value=new_value
                         board.pop()
                 
-                return [best_value, best_move]
+                return list([best_value, best_move])
                 
-
-
-        return PlayResult(minimax(3,board.turn,board),None)
+        best=minimax(1,not board.turn,board)
+        next_move=best[1]
+        logger.info("next move: ")
+        logger.info(next_move)
+        return PlayResult(next_move,None)
 
 
 
