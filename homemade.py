@@ -110,11 +110,12 @@ class MarsEngine(MinimalEngine):
             if(piece):
                 if(piece.color):
                     value+=piece_values[piece.piece_type]
-                    value+=positional_values[piece.piece_type][i]
+                    print(piece_values[piece.piece_type])
+                    value+=positional_values[piece.piece_type][square]
                 else:
                     value-=piece_values[piece.piece_type]
-                    value-=piece_values[piece.piece_type][chess.square_mirror(i)]
-
+                    value-=positional_values[piece.piece_type][chess.square_mirror(square)]
+        return value
         
         
 

@@ -82,17 +82,15 @@ def board_value(board):
     #calculate values of figures on board
     for square in range(64):
         piece = board.piece_at(square)
-        print(square)
         if(piece):
             if(piece.color):
-                pass
-                #value+=piece_values[piece.piece_type]
-                #value+=positional_values[piece.piece_type][square]
+                value+=piece_values[piece.piece_type]
+                print(piece_values[piece.piece_type])
+                value+=positional_values[piece.piece_type][square]
             else:
-                pass
                 value-=piece_values[piece.piece_type]
-                #value-=piece_values[piece.piece_type][chess.square_mirror(square)]
-        return value
+                value-=positional_values[piece.piece_type][chess.square_mirror(square)]
+    return value
     
 
 
