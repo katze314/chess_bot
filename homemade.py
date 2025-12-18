@@ -33,7 +33,16 @@ piece_values=[0,100,300,350,500,900,100000]
 #values for positions for each piece. 
 #for white peaces, needs to be flipped for black pieces.
 positional_values=[
-    [],
+    [
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0
+    ],
     [
          0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0,
@@ -101,61 +110,83 @@ positional_values=[
 
 class MarsEngine(MinimalEngine):
 
-    #computes the current board value, positive = white has better position
-    def board_value(board):    
-        value=0
-
-        #check if game is over
-        res=board.outcome()
-        if(not res.termination == None):
-            if(res.termination ==1):
-                if res.winner:
-                    return 100000
-                else:
-                    return -100000  
-            else:
-                return 0
-            
-
-        #calculate values of figures on board
-        for square in range(64):
-            piece = board.piece_at(square)
-            if(piece):
-                if(piece.color):
-                    value+=piece_values[piece.piece_type]
-                    print(piece_values[piece.piece_type])
-                    value+=positional_values[piece.piece_type][square]
-                else:
-                    value-=piece_values[piece.piece_type]
-                    value-=positional_values[piece.piece_type][chess.square_mirror(square)]
-        return value
-        
         
 
     def search(self, board: chess.Board, *args: HOMEMADE_ARGS_TYPE) -> PlayResult:
-        
-        moves=list(board.legal_moves)
-        values=[]
+            
+        #computes the current board value, positive = white has better position
+        def board_value(board):    
+            value=0
 
-        for move in moves:
-            values.append([random.random(),move])
-            if board.is_capture(move):
-                values[-1][0]+=piece_values[board.piece_map()[move.to_square]]
-            if (board.is_attacked_by(not board.turn, move.to_square)):
-                values[-1][0]-=piece_values[board.piece_map()[move.from_square]]
-            if (board.is_attacked_by(not board.turn , move.from_square)):
-                values[-1][0]+=piece_values[board.piece_map()[move.from_square]]
+            #check if game is over
+            res=board.outcome()
+            if(not res.termination == None):
+                if(res.termination ==1):
+                    if res.winner:
+                        return 100000
+                    else:
+                        return -100000  
+                else:
+                    return 0
+                
+            #calculate values of figures on board
 
-            board.push(move)
-            if(board.is_check):
-                values[-1][0]+=50
-            if(board.is_checkmate):
-                values[-1][0]+=100000
-            board.pop()
+            for square in range(64):
+                piece = board.piece_at(square)
+                if(piece):
+                    faktor=[-1,1][piece.color]
+                    if(piece.color):
+                        value+=positional_values[piece.piece_type][square]
+                    else:
+                        value-=positional_values[piece.piece_type][chess.square_mirror(square)]
+
+                    value+=piece_values[piece.piece_type]*faktor
+                    
+            #TODO check for attacks
+            #TODO check for pins
+
+            return value
+            
+
+        def minimax(depth, white, board):
+            if depth==0:
+                return [board_value(board),None]
+            else:
+                logger.info(board)
+                moves=list(board.legal_moves)
+                logger.info(moves)
+                if len(moves==0):
+                    return [board_value(board), None]
+                if white:
+                    best_move=moves[0]
+                    best_value=-1000000
+                    for move in moves:
+                        board.push(move)
+                        new_value=minimax(depth-1,False,board)
+                        if  new_value[0] > best_value:
+                            best_move=move
+                            best_value=new_value
+                        board.pop()
+                else:
+                    best_move=moves[0]
+                    best_value=1000000
+                    for move in moves:
+                        board.push(move)
+                        new_value=minimax(depth-1,True,board)
+                        if  new_value[0] < best_value:
+                            best_move=move
+                            best_value=new_value
+                        board.pop()
+                
+                return [best_value, best_move]
+                
 
 
-        values.sort(reverse=True)
-        return PlayResult(values[0][1], None)
+        return PlayResult(minimax(3,board.turn,board),None)
+
+
+
+
 
 
 
