@@ -104,6 +104,19 @@ class MarsEngine(MinimalEngine):
     #computes the current board value, positive = white has better position
     def board_value(board):    
         value=0
+
+        #check if game is over
+        res=board.outcome()
+        if(not res.termination == None):
+            if(res.termination ==1):
+                if res.winner:
+                    return 100000
+                else:
+                    return -100000  
+            else:
+                return 0
+            
+
         #calculate values of figures on board
         for square in range(64):
             piece = board.piece_at(square)

@@ -2,6 +2,13 @@ import chess
 
 xd=chess.Board()
 
+xd.push_san("e4")
+xd.push_san("e5")
+xd.push_san("Qh5")
+xd.push_san("Nc6")
+xd.push_san("Bc4")
+xd.push_san("Nf6")
+xd.push_san("Qxf7")
 
 
 
@@ -75,26 +82,5 @@ positional_values=[
     ]
 ]
     
-
-#computes the current board value, positive = white has better position
-def board_value(board):    
-    value=0
-    #calculate values of figures on board
-    for square in range(64):
-        piece = board.piece_at(square)
-        if(piece):
-            if(piece.color):
-                value+=piece_values[piece.piece_type]
-                print(piece_values[piece.piece_type])
-                value+=positional_values[piece.piece_type][square]
-            else:
-                value-=piece_values[piece.piece_type]
-                value-=positional_values[piece.piece_type][chess.square_mirror(square)]
-    return value
-    
-
-
-
-print(board_value(xd))
-
-
+x= xd.outcome()
+print(x.winner)
