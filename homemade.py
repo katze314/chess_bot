@@ -24,12 +24,99 @@ class ExampleEngine(MinimalEngine):
 
 # Bot names and ideas from tom7's excellent eloWorld video
 
-piece_values={chess.Piece.from_symbol('K'):100000, chess.Piece.from_symbol('R'): 500,chess.Piece.from_symbol('Q'): 900,chess.Piece.from_symbol('B'): 350, chess.Piece.from_symbol('N'): 300, chess.Piece.from_symbol('P'):100,chess.Piece.from_symbol('k'):100000, chess.Piece.from_symbol('r'): 500,chess.Piece.from_symbol('q'): 900,chess.Piece.from_symbol('b'): 350, chess.Piece.from_symbol('n'): 300, chess.Piece.from_symbol('p'):100, 'K':100000, 'R': 500, 'Q': 900,'B': 350, 'N': 300, 'P':100,'k':100000, 'r': 500,'q': 900,'b': 350, 'n': 300, 'p':100, None: 0}
+#values of each piece in centipawn
+#piece_values={chess.Piece.from_symbol('K'):100000, chess.Piece.from_symbol('R'): 500,chess.Piece.from_symbol('Q'): 900,chess.Piece.from_symbol('B'): 350, chess.Piece.from_symbol('N'): 300, chess.Piece.from_symbol('P'):100,chess.Piece.from_symbol('k'):100000, chess.Piece.from_symbol('r'): 500,chess.Piece.from_symbol('q'): 900,chess.Piece.from_symbol('b'): 350, chess.Piece.from_symbol('n'): 300, chess.Piece.from_symbol('p'):100, 'K':100000, 'R': 500, 'Q': 900,'B': 350, 'N': 300, 'P':100,'k':100000, 'r': 500,'q': 900,'b': 350, 'n': 300, 'p':100, None: 0}
+
+#values of each piece in centipawn
+piece_values=[0,100,300,350,500,900,100000]
+
+#values for positions for each piece. 
+#for white peaces, needs to be flipped for black pieces.
+positional_values=[
+    [],
+    [
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         1, 1, 1, 1, 1, 1, 1, 1,
+         2, 2, 2, 2, 2, 2, 2, 2,
+         4, 4, 4, 4, 4, 4, 4, 4,
+         8, 8, 8, 8, 8, 8, 8, 8,
+        16,16,16,16,16,16,16,16,
+        32,32,32,32,32,32,32,32
+    ],
+    [ 
+         2, 3, 4, 4, 4, 4, 3, 2,
+         3, 4, 6, 6, 6, 6, 4, 3,
+         4, 6, 8, 8, 8, 8, 6, 4,
+         4, 6, 8, 8, 8, 8, 6, 4,
+         4, 6, 8, 8, 8, 8, 6, 4,
+         4, 6, 8, 8, 8, 8, 6, 4,
+         3, 4, 6, 6, 6, 6, 4, 3,
+         2, 3, 4, 4, 4, 4, 3, 2
+    ],
+    [
+         7, 7, 7, 7, 7, 7, 7, 7,
+         7, 9, 9, 9, 9, 9, 9, 7,
+         7, 9,11,11,11,11, 9, 7,
+         7, 9,11,13,13,11, 9, 7,
+         7, 9,11,13,13,11, 9, 7,
+         7, 9,11,11,11,11, 9, 7,
+         7, 9, 9, 9, 9, 9, 9, 7,
+         7, 7, 7, 7, 7, 7, 7, 7
+    ],
+    [  
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         8, 8, 8, 8, 8, 8, 8, 8,
+         8, 8, 8, 8, 8, 8, 8, 8
+    ],
+    [
+         7, 7, 7, 7, 7, 7, 7, 7,
+         7, 9, 9, 9, 9, 9, 9, 7,
+         7, 9,11,11,11,11, 9, 7,
+         7, 9,11,13,13,11, 9, 7,
+         7, 9,11,13,13,11, 9, 7,
+         7, 9,11,11,11,11, 9, 7,
+        15,17,17,17,17,17,17,15,
+        15,15,15,15,15,15,15,15  
+    ],
+    [
+         8, 8, 8, 8, 8, 8, 8, 8,
+         8, 8, 8, 8, 8, 8, 8, 8,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0
+    ]
+]
+    
+#white is maximizing player
+
 
 class MarsEngine(MinimalEngine):
 
-    
-    
+    #computes the current board value, positive = white has better position
+    def board_value(board):    
+        value=0
+        #calculate values of figures on board
+        for square in range(64):
+            piece = board.piece_at(square)
+            if(piece):
+                if(piece.color):
+                    value+=piece_values[piece.piece_type]
+                    value+=positional_values[piece.piece_type][i]
+                else:
+                    value-=piece_values[piece.piece_type]
+                    value-=piece_values[piece.piece_type][chess.square_mirror(i)]
+
+        
+        
 
     def search(self, board: chess.Board, *args: HOMEMADE_ARGS_TYPE) -> PlayResult:
         
@@ -39,7 +126,6 @@ class MarsEngine(MinimalEngine):
         for move in moves:
             values.append([random.random(),move])
             if board.is_capture(move):
-                
                 values[-1][0]+=piece_values[board.piece_map()[move.to_square]]
             if (board.is_attacked_by(not board.turn, move.to_square)):
                 values[-1][0]-=piece_values[board.piece_map()[move.from_square]]
