@@ -155,9 +155,9 @@ class MarsEngine(MinimalEngine):
             if depth==0:
                 return list([board_value(board),None])
             else:
-                logger.info(board)
+                #logger.info(board)
                 moves=list(board.legal_moves)
-                logger.info(moves)
+                #logger.info(moves)
                 #if len(moves==0):
                 #    return list([board_value(board), None])
                 if white:
@@ -166,9 +166,11 @@ class MarsEngine(MinimalEngine):
                     for move in moves:
                         board.push(move)
                         new_value=minimax(depth-1,False,board)
-                        if  int(new_value[0]) > best_value:
+
+
+                        if  new_value[0] > best_value:
                             best_move=move
-                            best_value=new_value
+                            best_value=new_value[0]
                         board.pop()
                 else:
                     best_move=moves[0]
@@ -176,9 +178,12 @@ class MarsEngine(MinimalEngine):
                     for move in moves:
                         board.push(move)
                         new_value=minimax(depth-1,True,board)
-                        if  int(new_value[0]) < best_value:
+
+
+                        if  new_value[0] < best_value:
+                            
                             best_move=move
-                            best_value=new_value
+                            best_value=new_value[0]
                         board.pop()
                 
                 return list([best_value, best_move])
