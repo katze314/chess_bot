@@ -2,6 +2,7 @@ import chess
 
 xd=chess.Board()
 
+'''
 xd.push_san("e4")
 xd.push_san("e5")
 xd.push_san("Qh5")
@@ -10,7 +11,7 @@ xd.push_san("Bc4")
 xd.push_san("Nf6")
 xd.push_san("Qxf7")
 
-
+'''
 
 
 #values of each piece in centipawn
@@ -82,5 +83,9 @@ positional_values=[
     ]
 ]
     
-x= xd.outcome()
-print(x.winner)
+
+print(xd)
+xd.push_san("f3")
+print()
+attackers = xd.attackers(chess.WHITE, chess.F3) 
+print((attackers))

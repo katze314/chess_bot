@@ -138,19 +138,36 @@ class MarsEngine(MinimalEngine):
                 piece = board.piece_at(square)
                 if(piece):
                     faktor=[-1,1][piece.color]
+
+                    #positonal values
                     if(piece.color):
                         value+=positional_values[piece.piece_type][square]
                     else:
                         value-=positional_values[piece.piece_type][chess.square_mirror(square)]
 
+                    #values of pieces
                     value+=piece_values[piece.piece_type]*faktor
-                    
+
+
+                    #attacks
+                    black_attackers=board.attackers(chess.BLACK,square)
+                    white_attackers=board.attackers(chess.WHITE, square)
+                    if (len(black_attackers)>len(white_attackers)):
+                        value+=piece_values[piece.piece_type]/2
+                    if (len(white_attackers)> len(black_attackers)):
+                        value-=piece_values[piece.piece_type]/2
+
+
+
+
+
+
+                                        
             #TODO check for attacks
             #TODO check for pins
 
             return value
             
-# something about this isnt working!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         def minimax(depth, white, board):
             if depth==0:
                 return list([board_value(board),None])
@@ -158,15 +175,14 @@ class MarsEngine(MinimalEngine):
                 #logger.info(board)
                 moves=list(board.legal_moves)
                 #logger.info(moves)
-                #if len(moves==0):
-                #    return list([board_value(board), None])
+                if len(moves)==0:
+                    return list([board_value(board), None])
                 if white:
                     best_move=moves[0]
                     best_value=-1000000
                     for move in moves:
                         board.push(move)
                         new_value=minimax(depth-1,False,board)
-
 
                         if  new_value[0] > best_value:
                             best_move=move
@@ -188,7 +204,7 @@ class MarsEngine(MinimalEngine):
                 
                 return list([best_value, best_move])
                 
-        best=minimax(1,not board.turn,board)
+        best=minimax(3,board.turn,board)
         next_move=best[1]
         logger.info("next move: ")
         logger.info(next_move)
